@@ -28,18 +28,35 @@ export class TasksController {
     return this.tasksService.getTaskById(id);
   }
 
+  @Get()
+  getTasks(
+    @Query(ValidationPipe) filterDto: GetTasksFilterDto,
+  ): Promise<Task[]> {
+    if (Object.keys(filterDto).length) {
+      return this.tasksService.getTasksWithFilter(filterDto);
+    }
+    return this.tasksService.getAllTasks();
+  }
+
   @Post()
   @UsePipes(ValidationPipe)
-  createTask(
-    /** METHOD 1 */
-    // @Body() body
-    /** METHOD 2 */
-    // @Body('title') title: string,
-    // @Body('description') description: string,
-    /** WITH DTO */
-    @Body() taskCreateInput: Prisma.TaskCreateInput,
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.tasksService.createTask(createTaskDto);
+  }
+
+  @Delete('/:id')
+  deleteTask(@Param('id', ParseIntPipe) id: number): Promise<Task> {
+    return this.tasksService.deleteTask(id);
+  }
+
+  @Patch('/:id')
+  updateTask(
+    @Param('id', ParseIntPipe) id: number,
+    /** Update only Status with customm pipe validation */
+    // @Body('status', TaskStatusValidationPipe) status: TaskStatus,
+    @Body() data: Prisma.TaskUpdateInput,
   ): Promise<Task> {
-    return this.tasksService.createTask(taskCreateInput);
+    return this.tasksService.updateTask(id, data);
   }
 
   // @Get()
