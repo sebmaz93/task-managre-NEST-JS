@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -13,6 +14,7 @@ import {
 import { CreateTaskDto } from 'tasks/dto/create-task.dto';
 import { GetTasksFilterDto } from 'tasks/dto/get-tasks-filter.dto';
 // import { Task, TaskStatus } from 'tasks/task.model';
+import { Prisma, Task } from '@prisma/client';
 
 import { TasksService } from 'tasks/tasks.service';
 import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
@@ -20,6 +22,25 @@ import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
+
+  @Get('/:id')
+  getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
+    return this.tasksService.getTaskById(id);
+  }
+
+  @Post()
+  @UsePipes(ValidationPipe)
+  createTask(
+    /** METHOD 1 */
+    // @Body() body
+    /** METHOD 2 */
+    // @Body('title') title: string,
+    // @Body('description') description: string,
+    /** WITH DTO */
+    @Body() taskCreateInput: Prisma.TaskCreateInput,
+  ): Promise<Task> {
+    return this.tasksService.createTask(taskCreateInput);
+  }
 
   // @Get()
   // getTasks(@Query(ValidationPipe) filterDto: GetTasksFilterDto): Task[] {

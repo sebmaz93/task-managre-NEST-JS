@@ -36,7 +36,7 @@ export class TasksService {
   }
 
   async getTaskById(id: number): Promise<Task> {
-    const task = this.prisma.task.findUnique({ where: { id } });
+    const task = await this.prisma.task.findUnique({ where: { id } });
 
     if (!task) {
       throw new NotFoundException(`task with ID: ${id} not found!`);
@@ -45,17 +45,8 @@ export class TasksService {
     return task;
   }
 
-  async createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    // const { title, description } = createTaskDto;
-    // const task: Task = {
-    //   id: uuid(),
-    //   title,
-    //   description,
-    //   status: TaskStatus.OPEN,
-    // };
-
-    // this.tasks.push(task);
-    return this.tasks[0];
+  async createTask(data: Prisma.TaskCreateInput): Promise<Task> {
+    return this.prisma.task.create({ data });
   }
 
   async deleteTask(id: string): Promise<void> {
