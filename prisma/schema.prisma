@@ -16,10 +16,20 @@ model Task {
   title       String
   description String
   status      TaskStatus @default(OPEN)
+  User        User?      @relation(fields: [userId], references: [id])
+  userId      Int?
 }
 
 enum TaskStatus {
   OPEN
   IN_PROGRESS
   DONE
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  username String  @unique
+  password String
+  tasks    Task[]
+  salt     String?
 }

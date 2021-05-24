@@ -17,7 +17,7 @@ import { GetTasksFilterDto } from 'tasks/dto/get-tasks-filter.dto';
 import { Prisma, Task } from '@prisma/client';
 
 import { TasksService } from 'tasks/tasks.service';
-import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
+// import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
 
 @Controller('tasks')
 export class TasksController {
