@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,9 +18,11 @@ import { GetTasksFilterDto } from 'tasks/dto/get-tasks-filter.dto';
 import { Prisma, Task } from '@prisma/client';
 
 import { TasksService } from 'tasks/tasks.service';
+import { AuthGuard } from '@nestjs/passport';
 // import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
 
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
