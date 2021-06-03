@@ -9,16 +9,15 @@ import {
   Post,
   Query,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { CreateTaskDto } from 'tasks/dto/create-task.dto';
 import { GetTasksFilterDto } from 'tasks/dto/get-tasks-filter.dto';
 // import { Task, TaskStatus } from 'tasks/task.model';
-import { Prisma, Task } from '@prisma/client';
+import { Prisma, Task, User } from '@prisma/client';
 
 import { TasksService } from 'tasks/tasks.service';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from 'auth/get-user.decorator';
 // import { TaskStatusValidationPipe } from './pipes/task-status-validation.pipe';
 
 @Controller('tasks')
@@ -27,29 +26,38 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get('/:id')
-  getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
-    return this.tasksService.getTaskById(id);
+  getTaskById(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    return this.tasksService.getTaskById(id, user);
   }
 
   @Get()
   getTasks(
-    @Query(ValidationPipe) filterDto: GetTasksFilterDto,
+    @Query() filterDto: GetTasksFilterDto,
+    @GetUser() user: User,
   ): Promise<Task[]> {
     if (Object.keys(filterDto).length) {
-      return this.tasksService.getTasksWithFilter(filterDto);
+      return this.tasksService.getTasksWithFilter(filterDto, user);
     }
-    return this.tasksService.getAllTasks();
+    return this.tasksService.getAllTasks(user);
   }
 
   @Post()
-  @UsePipes(ValidationPipe)
-  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksService.createTask(createTaskDto);
+  createTask(
+    @Body() createTaskDto: CreateTaskDto,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    return this.tasksService.createTask(createTaskDto, user);
   }
 
   @Delete('/:id')
-  deleteTask(@Param('id', ParseIntPipe) id: number): Promise<Task> {
-    return this.tasksService.deleteTask(id);
+  deleteTask(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    return this.tasksService.deleteTask(id, user);
   }
 
   @Patch('/:id')
@@ -58,8 +66,9 @@ export class TasksController {
     /** Update only Status with customm pipe validation */
     // @Body('status', TaskStatusValidationPipe) status: TaskStatus,
     @Body() data: Prisma.TaskUpdateInput,
+    @GetUser() user: User,
   ): Promise<Task> {
-    return this.tasksService.updateTask(id, data);
+    return this.tasksService.updateTask(id, data, user);
   }
 
   // @Get()

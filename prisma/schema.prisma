@@ -12,12 +12,14 @@ generator client {
 }
 
 model Task {
-  id          Int        @id @default(autoincrement())
+  id          Int        @default(autoincrement())
   title       String
   description String
   status      TaskStatus @default(OPEN)
-  User        User?      @relation(fields: [userId], references: [id])
-  userId      Int?
+  User        User       @relation(fields: [userId], references: [id])
+  userId      Int
+
+  @@id([id, userId])
 }
 
 enum TaskStatus {
